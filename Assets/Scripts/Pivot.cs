@@ -38,8 +38,5 @@ public class Pivot : FollowTarget
         }
 	}
 
-    protected override void Follow(float deltaTime)
-    {
-
-    }
+    protected override void Follow(float deltaTime) { }
 }

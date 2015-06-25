@@ -52,6 +52,6 @@ public abstract class FollowTarget : MonoBehaviour
 
     public virtual void SetTarget(Transform newTargetTransform)
     {
-
+        target = newTargetTransform;
     }
 }

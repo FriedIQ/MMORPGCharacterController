@@ -8,13 +8,13 @@ public class FreeLookCamera : Pivot
     [SerializeField]
     private float turnSpeed = 1.5f;
     [SerializeField]
-    private float turnSmoothing = 1.0f;
+    private float turnSmoothing = 0.1f;
     [SerializeField]
     private float tiltMax = 75.0f;
     [SerializeField]
     private float tiltMin = 45.0f;
     [SerializeField]
-    private bool lockCursor = false;
+    private bool lockCursor = true;
 
     private float lookAngle;
     private float tiltAngle;
@@ -32,8 +32,8 @@ public class FreeLookCamera : Pivot
 
         Cursor.lockState = (lockCursor) ? CursorLockMode.Locked : CursorLockMode.None;
 
-        cam = GetComponentInChildren<Camera>().transform;
-        pivot = cam.parent;
+        //cam = GetComponentInChildren<Camera>().transform;
+        //pivot = cam.parent;
     }
 
 
@@ -45,6 +45,7 @@ public class FreeLookCamera : Pivot
 
         if (lockCursor && Input.GetMouseButtonUp(0))
         {
+            Debug.Log("Mouse 0 Pressed");
             Cursor.lockState = CursorLockMode.Locked;
         }
     }
@@ -81,6 +82,6 @@ public class FreeLookCamera : Pivot
         tiltAngle -= smoothY * turnSpeed;
         tiltAngle = Mathf.Clamp(tiltAngle, -tiltMin, tiltMax);
 
-        pivot.localRotation = Quaternion.Euler(tiltAngle, 0f, 0f);
+        pivot.localRotation = Quaternion.Euler(0f, 0f, -tiltAngle);
     }
 }
