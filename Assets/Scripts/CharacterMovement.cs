@@ -23,7 +23,7 @@ public class CharacterMovement : MonoBehaviour
 
     float autoTurnThreshold = 10f;
     float autoTurnSpeed = 20f;
-    bool aim;
+    bool aiming;
     Vector3 currentLookPos;
 
 	// Use this for initialization
@@ -34,7 +34,7 @@ public class CharacterMovement : MonoBehaviour
         SetupAnimator();
 	}
 
-    public void Move(Vector3 moveInput, bool aim, Vector3 lookPosition)
+    public void Move(Vector3 moveInput, bool aiming, Vector3 lookPosition)
     {
         if (moveInput.magnitude > 1)     // make sure that the movement is normalized
         {
@@ -42,16 +42,18 @@ public class CharacterMovement : MonoBehaviour
         }
 
         this.moveInput = moveInput;           // store the movement vector
-        this.aim = aim;
-        this.currentLookPos = lookPosition;
+        this.aiming = aiming;
+        currentLookPos = lookPosition;
 
         velocity = rigidBody.velocity;  // store the current velocity
 
         ConvertMoveInput();
 
-        TurnTowardsCameraForward();
-
-        ApplyExtraTurnRotation();
+        if (!aiming)
+        {
+            TurnTowardsCameraForward();
+            ApplyExtraTurnRotation();
+        }
 
         CheckGrounded();
 
@@ -146,8 +148,11 @@ public class CharacterMovement : MonoBehaviour
     void UpdateAnimator()
     {
         animator.applyRootMotion = true;
+
         animator.SetFloat("Vertical", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Horizontal", turnAmount, 0.1f, Time.deltaTime);
+
+       //animator.SetBool("Aim", aiming);
     }
 	
 	// Update is called once per frame

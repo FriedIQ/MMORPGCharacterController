@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Net.Sockets;
+using UnityEngine;
 using System.Collections;
 
 public class UserInput : MonoBehaviour
@@ -10,7 +11,7 @@ public class UserInput : MonoBehaviour
     private Vector3 cameraForward;              // stores the forward vector of the camera
     private Vector3 move;
 
-    public bool aim;
+    public bool aiming;
     public float aimingWeight;
 
     public bool lookInCameraDirection = true;
@@ -34,15 +35,29 @@ public class UserInput : MonoBehaviour
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
+        aiming = Input.GetMouseButton(0);
 
-        if (playerCamera != null)   // if there is a camera
+        if (!aiming)
         {
-            cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
-            move = (vertical * cameraForward) + (horizontal * playerCamera.right);
+            Debug.Log("Not Aiming!");
+            if (playerCamera != null)   // if there is a camera
+            {
+                cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
+                move = (vertical * cameraForward) + (horizontal * playerCamera.right);
+            }
+            else
+            {
+                move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
+            }
         }
         else
         {
-            move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
+            Debug.Log("Aiming!");
+            move = Vector3.zero; // stop moving if aiming
+            Vector3 dir = lookPosition - transform.position;
+            dir.y = 0;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
         }
 
         if (move.magnitude > 1)
@@ -50,8 +65,9 @@ public class UserInput : MonoBehaviour
             move.Normalize();
         }
 
-        bool walkToggle = Input.GetKey(KeyCode.LeftShift);
+        bool walkToggle = Input.GetKey(KeyCode.LeftShift) || aiming; // check for walking or aiming input
 
+        // the walk multiplier determine if the character is running or walking
         float walkMultiplier = 1;
 
         if (walkByDefault)
@@ -66,6 +82,6 @@ public class UserInput : MonoBehaviour
         lookPosition = (lookInCameraDirection && playerCamera != null && Input.GetMouseButton(1)) ? transform.position + playerCamera.forward * 100 : transform.position + transform.forward * 100;
         move *= walkMultiplier;
 
-        characterMove.Move(move, aim, lookPosition);
+        characterMove.Move(move, aiming, lookPosition);
     }
 }

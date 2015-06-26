@@ -14,6 +14,8 @@ public class FreeLookCamera : Pivot
     [SerializeField]
     private float tiltMin = 45.0f;
     [SerializeField]
+    private float orbitDistance = 0.8f;
+    [SerializeField]
     private bool lockCursor = true;
 
     private float lookAngle;
@@ -34,8 +36,10 @@ public class FreeLookCamera : Pivot
 
         //cam = GetComponentInChildren<Camera>().transform;
         //pivot = cam.parent;
-    }
 
+        // set the orbital distance for the camera
+        cam.localPosition = cam.localPosition + new Vector3(-orbitDistance, 0, 0);
+    }
 
     protected override void Update()
     {
