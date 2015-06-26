@@ -39,20 +39,25 @@ public class UserInput : MonoBehaviour
 
         if (!aiming)
         {
-            Debug.Log("Not Aiming!");
             if (playerCamera != null)   // if there is a camera
             {
+                // take the foward vector of the camera (from it's transform) and 
+                // eliminate the y component then scale the camera forward
+                // with the mask (1, 0, 1) to eliminate y and normalize it
                 cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
+
+                // move input front/backwards = forward direction of the camera * user input amount (vertical)
+                // move input left/right = right direction of the camera * user input amount (horizontal)
                 move = (vertical * cameraForward) + (horizontal * playerCamera.right);
             }
             else
             {
+                // if there is no camera, use the global forward (+z) and right (+x)
                 move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
             }
         }
         else
         {
-            Debug.Log("Aiming!");
             move = Vector3.zero; // stop moving if aiming
             Vector3 dir = lookPosition - transform.position;
             dir.y = 0;
@@ -79,7 +84,15 @@ public class UserInput : MonoBehaviour
             walkMultiplier = walkToggle ? 0.5f : 1f;
         }
 
-        lookPosition = (lookInCameraDirection && playerCamera != null && Input.GetMouseButton(1)) ? transform.position + playerCamera.forward * 100 : transform.position + transform.forward * 100;
+        if (lookInCameraDirection && playerCamera != null)
+        {
+            lookPosition = transform.position + playerCamera.forward * 100;
+        }
+        else
+        {
+            lookPosition = transform.position + transform.forward * 100;
+        }
+        
         move *= walkMultiplier;
 
         characterMove.Move(move, aiming, lookPosition);

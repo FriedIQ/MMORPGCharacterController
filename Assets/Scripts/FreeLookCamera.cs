@@ -49,7 +49,6 @@ public class FreeLookCamera : Pivot
 
         if (lockCursor && Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Mouse 0 Pressed");
             Cursor.lockState = CursorLockMode.Locked;
         }
     }
