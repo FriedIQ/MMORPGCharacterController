@@ -32,11 +32,11 @@ public class AICharacter : MonoBehaviour
 	        }
 
 	        agent.transform.position = transform.position;
-            characterMovement.Move(agent.desiredVelocity);
+            //characterMovement.Move(agent.desiredVelocity);
 	    }
 	    else
 	    {
-            characterMovement.Move(Vector3.zero);
+            //characterMovement.Move(Vector3.zero);
 	    }
 	}
 }

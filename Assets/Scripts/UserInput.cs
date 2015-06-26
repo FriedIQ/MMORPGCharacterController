@@ -7,9 +7,14 @@ public class UserInput : MonoBehaviour
 
     private CharacterMovement characterMove;
     private Transform playerCamera;
-    private Vector3 cameraForward;
+    private Vector3 cameraForward;              // stores the forward vector of the camera
     private Vector3 move;
 
+    public bool aim;
+    public float aimingWeight;
+
+    public bool lookInCameraDirection = true;
+    Vector3 lookPosition;
 
     void Start()
     {
@@ -30,7 +35,7 @@ public class UserInput : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        if (playerCamera != null)
+        if (playerCamera != null)   // if there is a camera
         {
             cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
             move = (vertical * cameraForward) + (horizontal * playerCamera.right);
@@ -58,8 +63,9 @@ public class UserInput : MonoBehaviour
             walkMultiplier = walkToggle ? 0.5f : 1f;
         }
 
+        lookPosition = (lookInCameraDirection && playerCamera != null && Input.GetMouseButton(1)) ? transform.position + playerCamera.forward * 100 : transform.position + transform.forward * 100;
         move *= walkMultiplier;
 
-        characterMove.Move(move);
+        characterMove.Move(move, aim, lookPosition);
     }
 }
