@@ -24,6 +24,7 @@ public class CharacterMovement : MonoBehaviour
     float autoTurnThreshold = 10f;
     float autoTurnSpeed = 20f;
     bool aiming;
+    bool sneaking;
     Vector3 currentLookPos;
 
 	// Use this for initialization
@@ -34,7 +35,7 @@ public class CharacterMovement : MonoBehaviour
         SetupAnimator();
 	}
 
-    public void Move(Vector3 moveInput, bool aiming, Vector3 lookPosition)
+    public void Move(Vector3 moveInput, bool aiming, bool sneaking, Vector3 lookPosition)
     {
         if (moveInput.magnitude > 1)     // make sure that the movement is normalized
         {
@@ -43,17 +44,15 @@ public class CharacterMovement : MonoBehaviour
 
         this.moveInput = moveInput;           // store the movement vector
         this.aiming = aiming;
+        this.sneaking = sneaking;
         currentLookPos = lookPosition;
 
         velocity = rigidBody.velocity;  // store the current velocity
 
         ConvertMoveInput();
 
-        if (!aiming)
-        {
-            TurnTowardsCameraForward();
-            ApplyExtraTurnRotation();
-        }
+        TurnTowardsCameraForward();
+        ApplyExtraTurnRotation();
 
         CheckGrounded();
 
@@ -151,12 +150,17 @@ public class CharacterMovement : MonoBehaviour
 
         animator.SetFloat("Vertical", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Horizontal", turnAmount, 0.1f, Time.deltaTime);
-
-       //animator.SetBool("Aim", aiming);
+        animator.SetBool("Aiming", aiming);
+        animator.SetBool("Sneaking", sneaking);
     }
 	
-	// Update is called once per frame
-	void Update () {}
+	void Update () 
+    {
+        if(!onGround)
+        {
+            Debug.Log("No longer grounded...");
+        }
+    }
 
     void TurnTowardsCameraForward()
     {

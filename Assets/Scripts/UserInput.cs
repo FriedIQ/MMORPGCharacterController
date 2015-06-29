@@ -11,11 +11,27 @@ public class UserInput : MonoBehaviour
     private Vector3 cameraForward;              // stores the forward vector of the camera
     private Vector3 move;
 
+    public bool sneaking;
+
+    public bool crouching;
+
     public bool aiming;
     public float aimingWeight;
 
     public bool lookInCameraDirection = true;
     Vector3 lookPosition;
+
+    Animator animator;
+
+    // Aiming IK values
+    public Transform spine;
+    public float aimingX = -65.93f;
+    public float aimingY = 20.1f;
+    public float aimingZ = 213.46f;
+    public float point = 30;
+
+    public ParticleSystem particleSys;
+    public AudioSource audioSource;
 
     void Start()
     {
@@ -29,41 +45,121 @@ public class UserInput : MonoBehaviour
         }
 
         characterMove = GetComponent<CharacterMovement>();
+
+        animator = GetComponent<Animator>();
+
+        audioSource = transform.GetComponentInChildren<AudioSource>();
+    }
+
+    void Update()
+    {
+        aiming = Input.GetMouseButton(1);
+        sneaking = (Input.GetKeyDown(KeyCode.LeftControl)) ? !sneaking : sneaking;
+
+        if(aiming)
+        {
+            if(Input.GetMouseButtonDown(0))
+            {
+                //animator.SetTrigger("Fire");
+                //SetAnimationTrigger("Fire", 2);
+
+                particleSys.Emit(1);
+
+                audioSource.Play();
+            }
+        }
+    }
+
+    public void SetAnimationTrigger(string animationName, int layer)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
+            animator.SetTrigger(animationName);
+    }
+
+    public void ResetAnimationTrigger(string animationName, int layer)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
+            animator.ResetTrigger(animationName);
+    }
+
+    void LateUpdate()
+    {
+        //aimingWeight = Mathf.MoveTowards(aimingWeight, (aiming) ? 1.0f : 0.0f, Time.deltaTime * 5);
+
+        //Vector3 normalState = new Vector3(0, 0, -2f);
+        //Vector3 aimingState = new Vector3(0, 0, 0.5f);
+
+        //Vector3 pos = Vector3.Lerp(normalState, aimingState, aimingWeight);
+
+        //playerCamera.transform.localPosition = pos;
+
+        //if (aiming)
+        //{
+        //    Vector3 eulierAngleOffset = Vector3.zero;
+        //    eulierAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
+
+        //    Ray ray = new Ray(playerCamera.position, playerCamera.forward);
+        //    Vector3 lookPosition = ray.GetPoint(point);
+
+        //    spine.LookAt(lookPosition);
+        //    spine.Rotate(eulierAngleOffset, Space.Self);
+        //}
+
+        //ResetAnimationTrigger("Fire", 2);
     }
 
     void FixedUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        aiming = Input.GetMouseButton(0);
 
-        if (!aiming)
+        if (playerCamera != null)   // if there is a camera
         {
-            if (playerCamera != null)   // if there is a camera
-            {
-                // take the foward vector of the camera (from it's transform) and 
-                // eliminate the y component then scale the camera forward
-                // with the mask (1, 0, 1) to eliminate y and normalize it
-                cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
+            // take the foward vector of the camera (from it's transform) and 
+            // eliminate the y component then scale the camera forward
+            // with the mask (1, 0, 1) to eliminate y and normalize it
+            cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
 
-                // move input front/backwards = forward direction of the camera * user input amount (vertical)
-                // move input left/right = right direction of the camera * user input amount (horizontal)
-                move = (vertical * cameraForward) + (horizontal * playerCamera.right);
-            }
-            else
-            {
-                // if there is no camera, use the global forward (+z) and right (+x)
-                move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
-            }
+            // move input front/backwards = forward direction of the camera * user input amount (vertical)
+            // move input left/right = right direction of the camera * user input amount (horizontal)
+            move = (vertical * cameraForward) + (horizontal * playerCamera.right);
         }
         else
         {
-            move = Vector3.zero; // stop moving if aiming
-            Vector3 dir = lookPosition - transform.position;
-            dir.y = 0;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
+            // if there is no camera, use the global forward (+z) and right (+x)
+            move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
         }
+
+        //if (!sneaking)
+        //{
+        //    if (playerCamera != null)   // if there is a camera
+        //    {
+        //        // take the foward vector of the camera (from it's transform) and 
+        //        // eliminate the y component then scale the camera forward
+        //        // with the mask (1, 0, 1) to eliminate y and normalize it
+        //        cameraForward = Vector3.Scale(playerCamera.forward, new Vector3(1, 0, 1)).normalized;
+
+        //        // move input front/backwards = forward direction of the camera * user input amount (vertical)
+        //        // move input left/right = right direction of the camera * user input amount (horizontal)
+        //        move = (vertical * cameraForward) + (horizontal * playerCamera.right);
+        //    }
+        //    else
+        //    {
+        //        // if there is no camera, use the global forward (+z) and right (+x)
+        //        move = (vertical * Vector3.forward) + (horizontal * Vector3.right);
+        //    }
+        //}
+        //else
+        //{
+        //    move = Vector3.zero; // stop moving if aiming
+        //    Vector3 dir = lookPosition - transform.position;
+        //    dir.y = 0;
+
+        //    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 20 * Time.deltaTime);
+
+        //    animator.SetFloat("Vertical", vertical);
+        //    animator.SetFloat("Horizontal", horizontal);
+        //}
 
         if (move.magnitude > 1)
         {
@@ -95,6 +191,6 @@ public class UserInput : MonoBehaviour
         
         move *= walkMultiplier;
 
-        characterMove.Move(move, aiming, lookPosition);
+        characterMove.Move(move, aiming, sneaking, lookPosition);
     }
 }
