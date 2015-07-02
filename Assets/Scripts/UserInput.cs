@@ -1,6 +1,8 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
 using UnityEngine;
 using System.Collections;
+
 
 public class UserInput : MonoBehaviour
 {
@@ -25,10 +27,19 @@ public class UserInput : MonoBehaviour
 
     // Aiming IK values
     public Transform spine;
-    public float aimingX = -65.93f;
-    public float aimingY = 20.1f;
-    public float aimingZ = 213.46f;
-    public float point = 30;
+
+    [SerializeField]
+    public IK ik;
+
+    [Serializable]
+    public class IK
+    {
+        public float aimingX = 0f;
+        public float aimingY = 130f;         // horizontal
+        public float aimingZ = -50f;        // vertical
+        public float point = 30;
+        public bool debugAim = false;
+    }
 
     public ParticleSystem particleSys;
     public AudioSource audioSource;
@@ -53,7 +64,10 @@ public class UserInput : MonoBehaviour
 
     void Update()
     {
-        aiming = Input.GetMouseButton(1);
+        if (!ik.debugAim)
+        {
+            aiming = Input.GetMouseButton(1);
+        }
         sneaking = (Input.GetKeyDown(KeyCode.LeftControl)) ? !sneaking : sneaking;
 
         if(aiming)
@@ -93,17 +107,17 @@ public class UserInput : MonoBehaviour
 
         //playerCamera.transform.localPosition = pos;
 
-        //if (aiming)
-        //{
-        //    Vector3 eulierAngleOffset = Vector3.zero;
-        //    eulierAngleOffset = new Vector3(aimingX, aimingY, aimingZ);
+        if (aiming)
+        {
+            Vector3 eulierAngleOffset = Vector3.zero;
+            eulierAngleOffset = new Vector3(ik.aimingX, ik.aimingY, ik.aimingZ);
 
-        //    Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-        //    Vector3 lookPosition = ray.GetPoint(point);
+            Ray ray = new Ray(playerCamera.position, playerCamera.forward);
+            Vector3 lookPosition = ray.GetPoint(ik.point);
 
-        //    spine.LookAt(lookPosition);
-        //    spine.Rotate(eulierAngleOffset, Space.Self);
-        //}
+            spine.LookAt(lookPosition);
+            spine.Rotate(eulierAngleOffset, Space.Self);
+        }
 
         //ResetAnimationTrigger("Fire", 2);
     }
