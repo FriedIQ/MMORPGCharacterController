@@ -14,8 +14,8 @@ public class ParticleDirection : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        transform.position = particleSpawnPoint.TransformPoint(Vector3.zero);
-        transform.forward = particleSpawnPoint.TransformDirection(Vector3.forward);
-        transform.rotation = particleSpawnPoint.rotation;
+        //transform.position = particleSpawnPoint.TransformPoint(Vector3.zero);
+        //transform.forward = particleSpawnPoint.TransformDirection(Vector3.forward);
+        //transform.rotation = particleSpawnPoint.rotation;
 	}
 }

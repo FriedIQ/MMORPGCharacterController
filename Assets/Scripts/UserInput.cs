@@ -29,10 +29,10 @@ public class UserInput : MonoBehaviour
     public Transform spine;
 
     [SerializeField]
-    public IK ik;
+    public IKAiming ikAiming;
 
     [Serializable]
-    public class IK
+    public class IKAiming
     {
         public float aimingX = 0f;
         public float aimingY = 130f;         // horizontal
@@ -41,8 +41,8 @@ public class UserInput : MonoBehaviour
         public bool debugAim = false;
     }
 
-    public ParticleSystem particleSys;
-    public AudioSource audioSource;
+    //public ParticleSystem particleSys;
+    //public AudioSource audioSource;
 
     void Start()
     {
@@ -59,12 +59,12 @@ public class UserInput : MonoBehaviour
 
         animator = GetComponent<Animator>();
 
-        audioSource = transform.GetComponentInChildren<AudioSource>();
+        // audioSource = transform.GetComponentInChildren<AudioSource>();
     }
 
     void Update()
     {
-        if (!ik.debugAim)
+        if (!ikAiming.debugAim)
         {
             aiming = Input.GetMouseButton(1);
         }
@@ -74,12 +74,7 @@ public class UserInput : MonoBehaviour
         {
             if(Input.GetMouseButtonDown(0))
             {
-                //animator.SetTrigger("Fire");
-                //SetAnimationTrigger("Fire", 2);
-
-                particleSys.Emit(1);
-
-                audioSource.Play();
+                // Fire!
             }
         }
     }
@@ -110,10 +105,10 @@ public class UserInput : MonoBehaviour
         if (aiming)
         {
             Vector3 eulierAngleOffset = Vector3.zero;
-            eulierAngleOffset = new Vector3(ik.aimingX, ik.aimingY, ik.aimingZ);
+            eulierAngleOffset = new Vector3(ikAiming.aimingX, ikAiming.aimingY, ikAiming.aimingZ);
 
             Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-            Vector3 lookPosition = ray.GetPoint(ik.point);
+            Vector3 lookPosition = ray.GetPoint(ikAiming.point);
 
             spine.LookAt(lookPosition);
             spine.Rotate(eulierAngleOffset, Space.Self);

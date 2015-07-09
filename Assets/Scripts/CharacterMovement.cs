@@ -150,6 +150,7 @@ public class CharacterMovement : MonoBehaviour
 
         animator.SetFloat("Vertical", forwardAmount, 0.1f, Time.deltaTime);
         animator.SetFloat("Horizontal", turnAmount, 0.1f, Time.deltaTime);
+
         animator.SetBool("Aiming", aiming);
         animator.SetBool("Sneaking", sneaking);
     }
