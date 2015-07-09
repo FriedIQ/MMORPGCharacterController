@@ -97,14 +97,14 @@ public class UserInput : MonoBehaviour
             if (Input.GetAxis("Mouse ScrollWheel") < -0.05f)
             {
                  weaponManager.ChangeWeapon(false);
-                 Debug.Log("Change Weapon: Desc: " + weaponManager.activeWeapon.weaponType.ToString());
             }
 
             if (Input.GetAxis("Mouse ScrollWheel") > 0.05f)
             {
                 weaponManager.ChangeWeapon(true);
-                Debug.Log("Change Weapon: Asc: " + weaponManager.activeWeapon.weaponType.ToString());
             }
+
+            Debug.Log("Change Weapon: " + weaponManager.activeWeapon.weaponType.ToString());
         }
     }
 

@@ -41,6 +41,8 @@ public class WeaponController : MonoBehaviour
         bulletSpawnObject.AddComponent<ParticleDirection>();
         bulletSpawnObject.GetComponent<ParticleDirection>().particleSpawnPoint = bulletSpawnPoint;
 
+	    bulletSpawnObject.transform.parent = bulletSpawnPoint;
+
         particalSystem = bulletSpawnObject.GetComponent<ParticleSystem>();
 
         audioSource = GetComponent<AudioSource>();

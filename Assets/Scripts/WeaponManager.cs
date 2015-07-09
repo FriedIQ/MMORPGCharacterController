@@ -53,9 +53,7 @@ public class WeaponManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        activeWeapon = weaponList[weaponNumber].GetComponent<WeaponController>();
         // update weapon specific IK here.
-        activeWeapon.equiped = true;
 	}
 
     public void FireActiveWeapon()
@@ -94,5 +92,8 @@ public class WeaponManager : MonoBehaviour
                 }
             }
         }
+
+        activeWeapon = weaponList[weaponNumber].GetComponent<WeaponController>();
+        activeWeapon.equiped = true;
     }
 }
