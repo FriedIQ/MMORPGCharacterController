@@ -25,6 +25,8 @@ public class UserInput : MonoBehaviour
 
     Animator animator;
 
+    private WeaponManager weaponManager;
+
     // Aiming IK values
     public Transform spine;
 
@@ -57,9 +59,10 @@ public class UserInput : MonoBehaviour
 
         characterMove = GetComponent<CharacterMovement>();
 
+        weaponManager = GetComponent<WeaponManager>();
+
         animator = GetComponent<Animator>();
 
-        // audioSource = transform.GetComponentInChildren<AudioSource>();
     }
 
     void Update()
@@ -68,13 +71,39 @@ public class UserInput : MonoBehaviour
         {
             aiming = Input.GetMouseButton(1);
         }
+
         sneaking = (Input.GetKeyDown(KeyCode.LeftControl)) ? !sneaking : sneaking;
 
         if(aiming)
         {
             if(Input.GetMouseButtonDown(0))
             {
-                // Fire!
+                if (!weaponManager.activeWeapon.canBurstFire)
+                {
+                    //animator.SetTrigger("Fire");
+                    weaponManager.FireActiveWeapon();
+                }
+                else
+                {
+                    //animator.SetTrigger("Fire");
+                    weaponManager.FireActiveWeapon();
+                }
+            }
+        }
+
+        if (Input.GetAxis("Mouse ScrollWheel") != 0.0f)
+        {
+            Debug.Log("Mouse ScrollWheel: " + Input.GetAxis("Mouse ScrollWheel").ToString());
+            if (Input.GetAxis("Mouse ScrollWheel") < -0.05f)
+            {
+                 weaponManager.ChangeWeapon(false);
+                 Debug.Log("Change Weapon: Desc: " + weaponManager.activeWeapon.weaponType.ToString());
+            }
+
+            if (Input.GetAxis("Mouse ScrollWheel") > 0.05f)
+            {
+                weaponManager.ChangeWeapon(true);
+                Debug.Log("Change Weapon: Asc: " + weaponManager.activeWeapon.weaponType.ToString());
             }
         }
     }
