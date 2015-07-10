@@ -19,12 +19,16 @@ public class WeaponManager : MonoBehaviour
 
     Animator animator;
 
+    // IK Setup
+    private float IKWeight;
+
     public List<GameObject> weaponList = new List<GameObject>();
     public WeaponController activeWeapon;
     int weaponNumber = 0;
 
     public WeaponType weaponType;
 
+    public bool aiming;
 
 	// Use this for initialization
 	void Start () 
@@ -54,7 +58,18 @@ public class WeaponManager : MonoBehaviour
 	void Update () 
     {
         // update weapon specific IK here.
-	}
+	    IKWeight = Mathf.MoveTowards(IKWeight, (aiming) ? 1.0f : 0.0f, Time.deltaTime);
+    }
+
+    void OnAnimatorIK()
+    {
+        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, IKWeight);
+        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, IKWeight);
+
+        Vector3 pos = activeWeapon.handPosition.transform.TransformPoint(Vector3.zero);
+        animator.SetIKPosition(AvatarIKGoal.LeftHand, activeWeapon.handPosition.transform.position);
+        animator.SetIKRotation(AvatarIKGoal.LeftHand, activeWeapon.handPosition.transform.rotation);
+    }
 
     public void FireActiveWeapon()
     {

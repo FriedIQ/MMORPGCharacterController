@@ -25,7 +25,14 @@ public class UserInput : MonoBehaviour
 
     Animator animator;
 
-    private WeaponManager weaponManager;
+    public bool debugShooting;
+
+    WeaponManager weaponManager;
+    private WeaponManager.WeaponType weaponType;
+
+    private CapsuleCollider capsuleCollider;
+    private float startHeight;
+
 
     // Aiming IK values
     public Transform spine;
@@ -67,6 +74,10 @@ public class UserInput : MonoBehaviour
 
     void Update()
     {
+        // CorrectIK();
+
+        weaponManager.aiming = aiming;
+
         if (!ikAiming.debugAim)
         {
             aiming = Input.GetMouseButton(1);
@@ -76,7 +87,7 @@ public class UserInput : MonoBehaviour
 
         if(aiming)
         {
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButtonDown(0) || debugShooting)
             {
                 if (!weaponManager.activeWeapon.canBurstFire)
                 {
@@ -106,18 +117,6 @@ public class UserInput : MonoBehaviour
 
             Debug.Log("Change Weapon: " + weaponManager.activeWeapon.weaponType.ToString());
         }
-    }
-
-    public void SetAnimationTrigger(string animationName, int layer)
-    {
-        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
-            animator.SetTrigger(animationName);
-    }
-
-    public void ResetAnimationTrigger(string animationName, int layer)
-    {
-        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
-            animator.ResetTrigger(animationName);
     }
 
     void LateUpdate()
@@ -230,5 +229,40 @@ public class UserInput : MonoBehaviour
         move *= walkMultiplier;
 
         characterMove.Move(move, aiming, sneaking, lookPosition);
+    }
+
+
+    void CorrectIK()
+    {
+        weaponType = weaponManager.weaponType;
+
+        if (!ikAiming.debugAim)
+        {
+            switch (weaponType)
+            {
+                case WeaponManager.WeaponType.Pistol:
+                    ikAiming.aimingX = -63.8f;
+                    ikAiming.aimingY = 16.65f;
+                    ikAiming.aimingZ = 212.19f;
+                    break;
+                case WeaponManager.WeaponType.Rifle:
+                    ikAiming.aimingX = -66.1f;
+                    ikAiming.aimingY = 14.1f;
+                    ikAiming.aimingZ = 212.19f;
+                    break;
+            }
+        }
+    }
+
+    public void SetAnimationTrigger(string animationName, int layer)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
+            animator.SetTrigger(animationName);
+    }
+
+    public void ResetAnimationTrigger(string animationName, int layer)
+    {
+        if (!animator.GetCurrentAnimatorStateInfo(layer).IsName(animationName))
+            animator.ResetTrigger(animationName);
     }
 }
